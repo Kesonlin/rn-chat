@@ -4,15 +4,12 @@
  *
  * @format
  */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
@@ -25,44 +22,34 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+import {NativeBaseProvider, Box, Text, Button} from 'native-base';
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+import {request} from './src/network';
+import Navigate from './src/router';
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  console.log(11);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  // useEffect(() => {
+
+  // }, []);
+
+  const send = () => {
+    request('/user')
+      .then(res => {
+        // console.log(res.json());
+        console.log(res.data);
+      })
+      .catch(e => {
+        console.log('error', e);
+      });
   };
 
-  return <Text>1111</Text>;
+  return (
+    <NativeBaseProvider>
+      <Navigate />
+    </NativeBaseProvider>
+  );
 }
 
 const styles = StyleSheet.create({
