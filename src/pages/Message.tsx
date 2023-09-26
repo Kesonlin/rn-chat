@@ -11,8 +11,10 @@ import {
   Spacer,
 } from 'native-base';
 import store from '../store';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function Message({navigation}): JSX.Element {
+  const isFouced = useIsFocused();
   useEffect(() => {
     console.log('加载1');
 
@@ -27,7 +29,7 @@ export default function Message({navigation}): JSX.Element {
         console.log('storage error', e);
         navigation.navigate('login');
       });
-  }, []);
+  }, [navigation, isFouced]);
   const data = [
     {
       id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',

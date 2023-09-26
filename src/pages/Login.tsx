@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   Box,
   Button,
@@ -14,6 +14,7 @@ import {
   Toast,
   VStack,
   useColorModeValue,
+  useToast,
 } from 'native-base';
 import {Animated, Dimensions} from 'react-native';
 import {SceneMap, TabView} from 'react-native-tab-view';
@@ -21,11 +22,17 @@ import Register from './Register';
 import {request} from '../network';
 import store from '../store';
 
-function LoginTab(props): JSX.Element {
+interface IProps {
+  tabProps: any;
+  navigateMsg: () => void;
+}
+
+function LoginTab(props: IProps): JSX.Element {
+  const {tabProps, navigateMsg} = props;
   const [info, setInfo] = useState({userName: '', password: ''});
   // navigation.navigate('register');
   console.log('login props', props);
-
+  const toast = useToast();
   const handleLogin = async () => {
     // 调用接口进行登录验证，返回结果
     const res: any = await request({
@@ -40,10 +47,21 @@ function LoginTab(props): JSX.Element {
     if (data && data.success) {
       // 登录成功的操作
       console.log('登录成功', data);
-      store.save({
+      toast.show({
+        render: () => {
+          return (
+            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              登录成功！
+            </Box>
+          );
+        },
+      });
+      await store.save({
         key: 'userInfo',
         data: data,
       });
+
+      navigateMsg();
     } else {
       Toast.show({
         title: data.msg,
@@ -132,7 +150,7 @@ function LoginTab(props): JSX.Element {
               onPress={() => {
                 console.log('PRESS');
 
-                props.jumpTo('register');
+                tabProps.jumpTo('register');
               }}>
               Sign Up
             </Link>
@@ -143,18 +161,9 @@ function LoginTab(props): JSX.Element {
   );
 }
 
-const initialLayout = {
-  width: Dimensions.get('window').width,
-};
-const renderScene = SceneMap({
-  // first: (props) => <LoginTab ...props />,
-  login: LoginTab,
-  register: Register,
-});
-
-function LoginScreen() {
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
+function LoginScreen({navigation}) {
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
     {
       key: 'login',
       title: 'login',
@@ -164,6 +173,19 @@ function LoginScreen() {
       title: 'register',
     },
   ]);
+
+  const navigateMsg = useCallback(() => {
+    navigation.navigate('main');
+  }, [navigation]);
+
+  const initialLayout = {
+    width: Dimensions.get('window').width,
+  };
+  const renderScene = SceneMap({
+    // first: (props) => <LoginTab ...props />,
+    login: props => <LoginTab navigateMsg={navigateMsg} tabProps={props} />,
+    register: Register,
+  });
 
   const renderTabBar = props => {
     const inputRange = props.navigationState.routes.map((x, i) => i);

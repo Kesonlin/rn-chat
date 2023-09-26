@@ -23,12 +23,15 @@ import {
   Heading,
   Link,
   VStack,
+  useToast,
 } from 'native-base';
 import {request} from '../network';
 import store from '../store';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 
-const Register = () => {
+const Register = props => {
+  console.log(props);
+  const toast = useToast();
   const [info, setInfo] = useState({
     userName: '',
     password: '',
@@ -46,6 +49,16 @@ const Register = () => {
 
     if (data && data.success) {
       console.log('注册成功', data);
+      toast.show({
+        render: () => {
+          return (
+            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              注册成功！
+            </Box>
+          );
+        },
+      });
+      props.jumpTo('login');
     } else {
       Toast.show({
         title: data.msg,

@@ -7,13 +7,14 @@ import {View} from 'react-native';
 import Message from '../pages/Message';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+import Home from '../pages/Home';
 
 const MessageStack = createNativeStackNavigator();
 
 function MessageStackScreen() {
   return (
     <MessageStack.Navigator>
-      <MessageStack.Screen name="message1" component={Message} />
+      <MessageStack.Screen name="main" component={Message} />
       <MessageStack.Screen name="login" component={Login} />
       <MessageStack.Screen name="register" component={Register} />
     </MessageStack.Navigator>
@@ -26,6 +27,7 @@ export default function Navigate(): JSX.Element {
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen name="message" component={MessageStackScreen} />
+        <Tab.Screen name="home" component={Home} />
       </Tab.Navigator>
     </NavigationContainer>
   );
