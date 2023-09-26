@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -12,24 +12,40 @@ import {
 } from 'native-base';
 import store from '../store';
 import {useIsFocused} from '@react-navigation/native';
+import {request} from '../network';
 
 export default function Message({navigation}): JSX.Element {
   const isFouced = useIsFocused();
+  const [info, setInfo] = useState([]);
   useEffect(() => {
+    if (!isFouced) return;
     console.log('加载1');
 
     store
       .load({
-        key: 'userInfo1',
+        key: 'userInfo',
       })
       .then(res => {
-        console.log('storage1', res);
+        // console.log('storage1', res);
+        setInfo(res);
       })
       .catch(e => {
         console.log('storage error', e);
         navigation.navigate('login');
       });
-  }, [navigation, isFouced]);
+  }, [navigation]);
+
+  useEffect(() => {
+    if (!isFouced) return;
+
+    request({
+      url: '/user/all',
+    }).then(({data}) => {
+      // console.log(data);
+      setInfo(data);
+    });
+  }, [isFouced]);
+
   const data = [
     {
       id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
@@ -77,9 +93,9 @@ export default function Message({navigation}): JSX.Element {
         Inbox
       </Heading>
       <FlatList
-        data={data}
+        data={info}
         renderItem={({item}) => (
-          <Box
+          <View
             borderBottomWidth="1"
             _dark={{
               borderColor: 'muted.50',
@@ -87,12 +103,17 @@ export default function Message({navigation}): JSX.Element {
             borderColor="muted.800"
             pl={['0', '4']}
             pr={['0', '5']}
-            py="2">
+            py="2"
+            onTouchEnd={() => {
+              console.log('chat');
+
+              navigation.navigate('chat', {frends: item.userName});
+            }}>
             <HStack space={[2, 3]} justifyContent="space-between">
               <Avatar
                 size="48px"
                 source={{
-                  uri: item.avatarUrl,
+                  uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                 }}
               />
               <VStack>
@@ -102,7 +123,7 @@ export default function Message({navigation}): JSX.Element {
                   }}
                   color="coolGray.800"
                   bold>
-                  {item.fullName}
+                  {item.userName}
                 </Text>
                 <Text
                   color="coolGray.600"
@@ -123,7 +144,7 @@ export default function Message({navigation}): JSX.Element {
                 {item.timeStamp}
               </Text>
             </HStack>
-          </Box>
+          </View>
         )}
         keyExtractor={item => item.id}
       />
