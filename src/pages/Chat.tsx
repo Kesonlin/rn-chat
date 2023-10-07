@@ -1,5 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Center, Stack, Text, TextArea, VStack, View} from 'native-base';
+import {
+  Button,
+  Center,
+  ScrollView,
+  Stack,
+  Text,
+  TextArea,
+  VStack,
+  View,
+} from 'native-base';
 import {io} from 'socket.io-client';
 import store from '../store';
 import {request} from '../network';
@@ -26,23 +35,25 @@ function Message(props: any): JSX.Element {
   </VStack>;
 
   return (
-    <Stack mb="2.5" mt="1.5" direction="column" space={3}>
-      {list.map((v: MessageType) => (
-        <View>
-          <Center
-            maxW="2xs"
-            bg="primary.300"
-            rounded="md"
-            shadow={3}
-            // style={{float: 'right'}}
-          >
-            <Text fontSize="xl">
-              msg: {v.message} from: {v.sender} to: {v.receiver}
-            </Text>
-          </Center>
-        </View>
-      ))}
-    </Stack>
+    <ScrollView h="lg">
+      <Stack mb="2.5" mt="1.5" direction="column" space={3}>
+        {list.map((v: MessageType) => (
+          <View style={{alignContent: 'flex-end'}}>
+            <Center
+              maxW="2xs"
+              bg="primary.300"
+              rounded="md"
+              shadow={3}
+              //
+            >
+              <Text fontSize="xl">
+                msg: {v.message} from: {v.sender} to: {v.receiver}
+              </Text>
+            </Center>
+          </View>
+        ))}
+      </Stack>
+    </ScrollView>
   );
 }
 
@@ -53,21 +64,7 @@ export default function (props: IProps) {
   const [list, setList] = useState([]);
   const [textAreaValue, setTextAreaValue] = useState('');
   const isFouced = useIsFocused();
-  console.log('route', route);
-  useEffect(() => {
-    store
-      .load({
-        key: 'userInfo',
-      })
-      .then(res => {
-        // console.log('storage1', res);
-        setInfo(res.data[0]);
-      })
-      .catch(e => {
-        console.log('storage error', e);
-        navigation.navigate('login');
-      });
-  }, [navigation]);
+  // console.log('route', route);
 
   useEffect(() => {
     setSosket(io('http://10.0.2.2:3000'));
@@ -90,36 +87,59 @@ export default function (props: IProps) {
 
   useEffect(() => {
     if (!isFouced) return;
-    getMsgs();
+    store
+      .load({
+        key: 'userInfo',
+      })
+      .then(res => {
+        // console.log('storage1', res);
+        setInfo(res.data[0]);
+        getMsgs(res.data[0]);
+      })
+      .catch(e => {
+        console.log('storage error', e);
+        navigation.navigate('login');
+      });
+    // getMsgs();
   }, [isFouced]);
 
-  const getMsgs = async () => {
-    const {data} = await request({
-      url: '/message/all',
-      method: 'post',
-      data: {
-        from: info?.userName,
-        to: route.params.frends,
-      },
-    });
-    setList(data.data.list);
+  const getMsgs = async (from = info, to = route?.params?.frends) => {
+    console.log('from', from, 'to', to);
+    // console.log('route.params.frends', route.params.frends);
+    if (!from || !to) return;
+    try {
+      const {data} = await request({
+        url: '/message/all',
+        method: 'post',
+        data: {
+          from: from.userName,
+          to,
+        },
+      });
+      setList(data.data.list);
+    } catch (e) {
+      console.log('eeee', e);
+    }
   };
 
   const send = () => {
-    console.log(
-      'message:',
-      textAreaValue,
-      'from',
-      info,
-      'to:',
-      route.params.frends,
-    );
+    // console.log(
+    //   'message:',
+    //   textAreaValue,
+    //   'from',
+    //   info,
+    //   'to:',
+    //   route.params.frends,
+    // );
     socket.emit('sendMessage', {
       sender: info?.userName,
       receiver: route.params.frends,
       time: new Date().toJSON(),
       message: textAreaValue,
     });
+    setTimeout(() => {
+      setTextAreaValue('');
+    }, 100);
   };
 
   return (

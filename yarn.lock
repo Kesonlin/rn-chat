@@ -2012,6 +2012,13 @@
   dependencies:
     serve-static "^1.13.1"
 
+"@react-native-community/cli-debugger-ui@^11.3.8":
+  version "11.3.8"
+  resolved "https://registry.npmmirror.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-11.3.8.tgz#0a71001239669356f2eeb6138d0083915dcdee42"
+  integrity sha512-G34/iZn1xt+mX0bU4vDx31R7kyfjAyYzQ47qq12uRZZqZHxulrKGlWu4Ehpq1PQuKYGY1clFhm22adotArkpAQ==
+  dependencies:
+    serve-static "^1.13.1"
+
 "@react-native-community/cli-doctor@11.3.6":
   version "11.3.6"
   resolved "https://registry.npmmirror.com/@react-native-community/cli-doctor/-/cli-doctor-11.3.6.tgz#fa33ee00fe5120af516aa0f17fe3ad50270976e7"
@@ -7192,6 +7199,14 @@ react-devtools-core@^4.27.2:
   version "4.28.0"
   resolved "https://registry.npmmirror.com/react-devtools-core/-/react-devtools-core-4.28.0.tgz#3fa18709b24414adddadac33b6b9cea96db60f2f"
   integrity sha512-E3C3X1skWBdBzwpOUbmXG8SgH6BtsluSMe+s6rRcujNKG1DGi8uIfhdhszkgDpAsMoE55hwqRUzeXCmETDBpTg==
+  dependencies:
+    shell-quote "^1.6.1"
+    ws "^7"
+
+react-devtools-core@^4.28.4:
+  version "4.28.4"
+  resolved "https://registry.npmmirror.com/react-devtools-core/-/react-devtools-core-4.28.4.tgz#fb8183eada77093f4c2f9830e664bf22255abe27"
+  integrity sha512-IUZKLv3CimeM07G3vX4H4loxVpByrzq3HvfTX7v9migalwvLs9ZY5D3S3pKR33U+GguYfBBdMMZyToFhsSE/iQ==
   dependencies:
     shell-quote "^1.6.1"
     ws "^7"
