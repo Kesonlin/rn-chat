@@ -14,12 +14,8 @@ import store from '../store';
 import {useIsFocused} from '@react-navigation/native';
 import {request} from '../network';
 
-interface userinfoType {
-  userName: string;
-  avatar: string;
-}
-
-export default function Message({navigation}): JSX.Element {
+export default function Message(props: any): JSX.Element {
+  const {navigation} = props;
   const isFouced = useIsFocused();
   const [info, setInfo] = useState([]);
   useEffect(() => {
@@ -33,12 +29,13 @@ export default function Message({navigation}): JSX.Element {
       .then(res => {
         // console.log('storage1', res);
         // setInfo(res);
+        // navigation.navigate('login');
       })
       .catch(e => {
         console.log('storage error', e);
         navigation.navigate('login');
       });
-  }, [navigation]);
+  }, [navigation, isFouced]);
 
   useEffect(() => {
     // if (!isFouced) return;
@@ -71,7 +68,7 @@ export default function Message({navigation}): JSX.Element {
             onTouchEnd={() => {
               console.log('chat');
 
-              navigation.navigate('chat', {frends: item.userName});
+              navigation.navigate('chat', {frends: item});
             }}>
             <HStack space={[2, 3]} justifyContent="space-between">
               <Avatar
@@ -89,16 +86,16 @@ export default function Message({navigation}): JSX.Element {
                   bold>
                   {item.userName}
                 </Text>
-                <Text
+                {/* <Text
                   color="coolGray.600"
                   _dark={{
                     color: 'warmGray.200',
                   }}>
                   {item.recentText}
-                </Text>
+                </Text> */}
               </VStack>
               <Spacer />
-              <Text
+              {/* <Text
                 fontSize="xs"
                 _dark={{
                   color: 'warmGray.50',
@@ -106,7 +103,7 @@ export default function Message({navigation}): JSX.Element {
                 color="coolGray.800"
                 alignSelf="flex-start">
                 {item.timeStamp}
-              </Text>
+              </Text> */}
             </HStack>
           </View>
         )}

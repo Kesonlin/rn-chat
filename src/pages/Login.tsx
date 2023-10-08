@@ -58,7 +58,7 @@ function LoginTab(props: IProps): JSX.Element {
       });
       await store.save({
         key: 'userInfo',
-        data: data,
+        data: data.data,
       });
 
       navigateMsg();
