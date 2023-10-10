@@ -100,11 +100,11 @@ function Message(props: any): JSX.Element {
 export default function (props: IProps) {
   const {navigation, route} = props;
   const [info, setInfo] = useState<userinfoType>();
-  const [socket, setSosket] = useState<any>(null);
   const [list, setList] = useState([]);
   const [textAreaValue, setTextAreaValue] = useState('');
   const isFouced = useIsFocused();
   const infoRef = useRef(info);
+  const socketRef = useRef<any>();
   // console.log('route', route);
   const getMsgs = useCallback(
     async (from: any, to = route?.params?.frends) => {
@@ -133,45 +133,33 @@ export default function (props: IProps) {
 
   useEffect(() => {
     console.log('socket connect');
-
-    setSosket(io('http://10.0.2.2:3000'));
-    return () => {
-      // socket?.close();
-      socket?.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!socket) return;
-    console.log('socket111');
-
-    socket.emit('connection', async () => {
+    const instance = io('http://10.0.2.2:3000');
+    socketRef.current = instance;
+    socketRef.current.emit('connection', async () => {
       console.log('connect success');
       // await socket.join(from);
     });
-    socket.on('join', (cb: () => void) => {
+    socketRef.current.on('join', (cb: () => void) => {
       // console.log('socket', cb);
       cb();
       // await socket.join(from);
     });
 
-    socket.on('showMessage', () => {
+    socketRef.current.on('showMessage', () => {
       // console.log('receive message');
 
       getMsgs(infoRef.current);
     });
 
-    socket.on('disconnect', () => {
-      console.log('socket is disconnect');
+    socketRef.current.on('disconnect', (reason: string) => {
+      console.log('socket is disconnect', reason);
     });
-
     return () => {
-      // if (!socket) return;
+      socketRef.current.close();
       console.log('the page is close');
-
-      // socket?.close();
+      socketRef.current.disconnect();
     };
-  }, [socket, getMsgs]);
+  }, [getMsgs]);
 
   useEffect(() => {
     if (!isFouced) {
@@ -194,8 +182,6 @@ export default function (props: IProps) {
     // getMsgs();
   }, [isFouced, getMsgs, navigation]);
 
-  // console.log('info111111111', info);
-
   const send = () => {
     // console.log(
     //   'message:',
@@ -205,9 +191,8 @@ export default function (props: IProps) {
     //   'to:',
     //   route.params.frends,
     // );
-    // console.log(socket);
 
-    socket.emit('sendMessage', {
+    socketRef.current.emit('sendMessage', {
       sender: info?.userName,
       receiver: route.params.frends.userName,
       time: new Date().toJSON(),
