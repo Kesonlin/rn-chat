@@ -1,5 +1,13 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Avatar, Button, Input, Text, TextArea, View} from 'native-base';
+import {
+  Avatar,
+  Button,
+  Input,
+  ScrollView,
+  Text,
+  TextArea,
+  View,
+} from 'native-base';
 import {io} from 'socket.io-client';
 import store from '../store';
 import {request} from '../network';
@@ -31,10 +39,11 @@ function Mine(props: ChatType): JSX.Element {
         bg="green.500"
         source={{
           uri: user.avatar,
-        }}></Avatar>
+        }}
+      />
       <View
+        bgColor="pink.300"
         style={{
-          backgroundColor: 'green',
           padding: 10,
           borderRadius: 8,
           maxWidth: 200,
@@ -54,13 +63,15 @@ function You(props: ChatType): JSX.Element {
         bg="green.500"
         source={{
           uri: user.avatar,
-        }}></Avatar>
+        }}
+      />
       <View
+        bgColor="teal.300"
         style={{
-          backgroundColor: 'blue',
           padding: 10,
           borderRadius: 8,
           maxWidth: 200,
+          marginLeft: 10,
         }}>
         <Text style={{color: 'white'}}>{content}</Text>
       </View>
@@ -69,10 +80,11 @@ function You(props: ChatType): JSX.Element {
 }
 
 function Message(props: any): JSX.Element {
-  const {list = [], user, to} = props;
+  const {list = [], user, to, scrollRef} = props;
+  // const scrollRef = useRef<any>();
 
   return (
-    <View style={{backgroundColor: 'pink', padding: 10}}>
+    <ScrollView h="5/6" bgColor="primary.400" paddingTop="6" ref={scrollRef}>
       {list.map((v: MessageType) =>
         v.sender === user.userName ? (
           <Mine content={v.message} user={user} key={v.id} />
@@ -80,20 +92,7 @@ function Message(props: any): JSX.Element {
           <You content={v.message} user={to} key={v.id} />
         ),
       )}
-      {/* 输入框 */}
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        {/* 消息输入框 */}
-        <Input
-          placeholder="Type a message"
-          style={{flex: 1, marginRight: 10}}
-        />
-
-        {/* 发送按钮 */}
-        <Button style={{backgroundColor: 'green', borderRadius: 8}}>
-          <Text style={{color: 'white'}}>Send</Text>
-        </Button>
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -105,6 +104,7 @@ export default function (props: IProps) {
   const isFouced = useIsFocused();
   const infoRef = useRef(info);
   const socketRef = useRef<any>();
+  const scrollRef = useRef<any>();
   // console.log('route', route);
   const getMsgs = useCallback(
     async (from: any, to = route?.params?.frends) => {
@@ -182,6 +182,10 @@ export default function (props: IProps) {
     // getMsgs();
   }, [isFouced, getMsgs, navigation]);
 
+  useEffect(() => {
+    scrollRef.current?.scrollToEnd();
+  }, [list]);
+
   const send = () => {
     // console.log(
     //   'message:',
@@ -200,6 +204,7 @@ export default function (props: IProps) {
     });
     setTimeout(() => {
       // getMsgs();
+      // console.log('scrollRef', scrollRef);
       setTextAreaValue('');
     }, 100);
   };
@@ -207,7 +212,12 @@ export default function (props: IProps) {
   return (
     <View style={{backgroundColor: 'yellow'}}>
       {/* <SafeAreaView style={{ flex: 1 }}> */}
-      <Message list={list} user={info} to={route?.params?.frends} />
+      <Message
+        list={list}
+        user={info}
+        to={route?.params?.frends}
+        scrollRef={scrollRef}
+      />
       {/* </SafeAreaView> */}
 
       <TextArea
@@ -217,7 +227,7 @@ export default function (props: IProps) {
         // placeholder="Text Area Placeholder"
         value={textAreaValue}
         onChangeText={text => setTextAreaValue(text)}
-        w="200"
+        w="100%"
         _light={{
           placeholderTextColor: 'trueGray.700',
           bg: 'coolGray.100',
@@ -238,7 +248,7 @@ export default function (props: IProps) {
           },
         }}
       />
-      <Button onPress={send}>
+      <Button onPress={send} bgColor="violet.300">
         <Text>send</Text>
       </Button>
     </View>

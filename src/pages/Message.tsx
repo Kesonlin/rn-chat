@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Box,
-  Heading,
   FlatList,
   HStack,
   Avatar,
@@ -49,9 +48,6 @@ export default function Message(props: any): JSX.Element {
 
   return (
     <Box>
-      <Heading fontSize="xl" p="4" pb="3">
-        Inbox
-      </Heading>
       <FlatList
         data={info}
         renderItem={({item}: {item: userinfoType}) => (

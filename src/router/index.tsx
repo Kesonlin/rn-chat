@@ -16,7 +16,13 @@ function MessageStackScreen() {
   return (
     <MessageStack.Navigator>
       <MessageStack.Screen name="main" component={Message} />
-      <MessageStack.Screen name="chat" component={Chat} />
+      <MessageStack.Screen
+        name="chat"
+        component={Chat}
+        options={({route}: {[key: string]: any}) => ({
+          title: route.params.frends?.userName,
+        })}
+      />
       <MessageStack.Screen name="login" component={Login} />
       <MessageStack.Screen name="register" component={Register} />
     </MessageStack.Navigator>
