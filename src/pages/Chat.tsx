@@ -1,22 +1,9 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  Avatar,
-  Button,
-  Center,
-  Container,
-  Input,
-  ScrollView,
-  Stack,
-  Text,
-  TextArea,
-  VStack,
-  View,
-} from 'native-base';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Avatar, Button, Input, Text, TextArea, View} from 'native-base';
 import {io} from 'socket.io-client';
 import store from '../store';
 import {request} from '../network';
 import {useIsFocused} from '@react-navigation/native';
-import {TextInput} from 'react-native';
 
 interface IProps {
   route: any;
@@ -33,38 +20,7 @@ interface MessageType {
 
 interface ChatType {
   user: userinfoType;
-  content: sring;
-}
-
-function Message1(props: any): JSX.Element {
-  const {list = [], user} = props;
-  <VStack space={4} alignItems="center">
-    <Center w="64" h="20" bg="indigo.300" rounded="md" shadow={3} />
-    <Center w="64" h="20" bg="indigo.500" rounded="md" shadow={3} />
-    <Center w="64" h="20" bg="indigo.700" rounded="md" shadow={3} />
-  </VStack>;
-
-  return (
-    <ScrollView h="lg">
-      <Stack mb="2.5" mt="1.5" direction="column" space={3}>
-        {list.map((v: MessageType) => (
-          <View style={{alignContent: 'flex-end'}}>
-            <Center
-              maxW="2xs"
-              bg="primary.300"
-              rounded="md"
-              shadow={3}
-              //
-            >
-              <Text fontSize="xl">
-                msg: {v.message} from: {v.sender} to: {v.receiver}
-              </Text>
-            </Center>
-          </View>
-        ))}
-      </Stack>
-    </ScrollView>
-  );
+  content: string;
 }
 
 function Mine(props: ChatType): JSX.Element {
@@ -143,25 +99,57 @@ function Message(props: any): JSX.Element {
 
 export default function (props: IProps) {
   const {navigation, route} = props;
-  const [info, setInfo] = useState();
-  const [socket, setSosket] = useState<any>('');
+  const [info, setInfo] = useState<userinfoType>();
+  const [socket, setSosket] = useState<any>(null);
   const [list, setList] = useState([]);
   const [textAreaValue, setTextAreaValue] = useState('');
   const isFouced = useIsFocused();
   const infoRef = useRef(info);
   // console.log('route', route);
+  const getMsgs = useCallback(
+    async (from: any, to = route?.params?.frends) => {
+      from = from ? from : info;
+
+      // console.log('info', info, 'from', from, 'to', to);
+      // console.log('route.params.frends', route.params.frends);
+      if (!from || !to) return;
+      try {
+        const {data} = await request({
+          url: '/message/all',
+          method: 'post',
+          data: {
+            from: from.userName,
+            to: to.userName,
+          },
+        });
+
+        setList(data.data.list);
+      } catch (e) {
+        console.log('eeee', e);
+      }
+    },
+    [info, route?.params?.frends],
+  );
 
   useEffect(() => {
+    console.log('socket connect');
+
     setSosket(io('http://10.0.2.2:3000'));
+    return () => {
+      // socket?.close();
+      socket?.disconnect();
+    };
   }, []);
 
   useEffect(() => {
     if (!socket) return;
-    socket.emit('connection', async socket => {
+    console.log('socket111');
+
+    socket.emit('connection', async () => {
       console.log('connect success');
       // await socket.join(from);
     });
-    socket.on('join', cb => {
+    socket.on('join', (cb: () => void) => {
       // console.log('socket', cb);
       cb();
       // await socket.join(from);
@@ -173,17 +161,21 @@ export default function (props: IProps) {
       getMsgs(infoRef.current);
     });
 
+    socket.on('disconnect', () => {
+      console.log('socket is disconnect');
+    });
+
     return () => {
       // if (!socket) return;
-      // console.log('the page is close');
+      console.log('the page is close');
 
-      socket?.close();
+      // socket?.close();
     };
-  }, [socket]);
+  }, [socket, getMsgs]);
 
   useEffect(() => {
     if (!isFouced) {
-      socket?.close();
+      // socket?.close();
       return;
     }
     store
@@ -200,29 +192,7 @@ export default function (props: IProps) {
         navigation.navigate('login');
       });
     // getMsgs();
-  }, [isFouced]);
-
-  const getMsgs = async (from: any, to = route?.params?.frends) => {
-    from = from ? from : info;
-
-    // console.log('info', info, 'from', from, 'to', to);
-    // console.log('route.params.frends', route.params.frends);
-    if (!from || !to) return;
-    try {
-      const {data} = await request({
-        url: '/message/all',
-        method: 'post',
-        data: {
-          from: from.userName,
-          to: to.userName,
-        },
-      });
-
-      setList(data.data.list);
-    } catch (e) {
-      console.log('eeee', e);
-    }
-  };
+  }, [isFouced, getMsgs, navigation]);
 
   // console.log('info111111111', info);
 
@@ -235,6 +205,8 @@ export default function (props: IProps) {
     //   'to:',
     //   route.params.frends,
     // );
+    // console.log(socket);
+
     socket.emit('sendMessage', {
       sender: info?.userName,
       receiver: route.params.frends.userName,
@@ -256,6 +228,7 @@ export default function (props: IProps) {
       <TextArea
         shadow={2}
         h={20}
+        autoCompleteType={{}}
         // placeholder="Text Area Placeholder"
         value={textAreaValue}
         onChangeText={text => setTextAreaValue(text)}

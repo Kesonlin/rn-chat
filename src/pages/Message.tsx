@@ -20,13 +20,12 @@ export default function Message(props: any): JSX.Element {
   const [info, setInfo] = useState([]);
   useEffect(() => {
     if (!isFouced) return;
-    console.log('加载1');
 
     store
       .load({
         key: 'userInfo',
       })
-      .then(res => {
+      .then(_ => {
         // console.log('storage1', res);
         // setInfo(res);
         // navigation.navigate('login');
@@ -107,7 +106,7 @@ export default function Message(props: any): JSX.Element {
             </HStack>
           </View>
         )}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item?.id!}
       />
     </Box>
   );

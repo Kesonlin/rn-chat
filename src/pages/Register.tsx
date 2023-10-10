@@ -1,60 +1,46 @@
 import React, {useState} from 'react';
+import {Platform, Image} from 'react-native';
 import {
-  View,
-  StyleSheet,
-  ScrollView,
-  KeyboardAvoidingView,
-  Dimensions,
-  Pressable,
-  Animated,
-  ImagePicker,
-  Platform,
-  Image,
-} from 'react-native';
-import {
-  Container,
-  Input,
-  Button,
-  Text,
   Toast,
   Center,
   Box,
-  useColorModeValue,
-  StatusBar,
   FormControl,
-  HStack,
   Heading,
-  Link,
   VStack,
   useToast,
-  // Image,
+  Button,
+  Input,
 } from 'native-base';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {request} from '../network';
 
-import store from '../store';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Register = (props: any): JSX.Element => {
-  console.log(props);
+  // console.log(props);
   const toast = useToast();
-  const [info, setInfo] = useState({
+  const [info, setInfo] = useState<userinfoType>({
     userName: '',
     password: '',
     // avatar: '',
   });
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState<any>();
 
   const handleChoosePhoto = () => {
-    launchImageLibrary({noData: true}, response => {
+    launchImageLibrary({mediaType: 'photo'}, response => {
       console.log('response', response);
-      if (response) {
+      if (
+        response &&
+        !response.didCancel &&
+        response.assets &&
+        response.assets.length > 0
+      ) {
         setPhoto(response.assets[0]);
       }
     });
   };
 
-  const createFormData = (photo, body = {}) => {
+  const createFormData = (body: {[key: string]: any} = {}) => {
     const data = new FormData();
     console.log('photo', photo);
     if (photo) {
@@ -78,13 +64,19 @@ const Register = (props: any): JSX.Element => {
 
   const handleRegister = async () => {
     try {
+      if (!info || !info.userName || !info.password) {
+        toast.show({
+          title: '用户名或者密码不能为空！',
+        });
+        return;
+      }
       const res: any = await request({
         url: '/user/create',
         method: 'post',
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        data: createFormData(photo, info),
+        data: createFormData(info),
       });
 
       const data = res?.data;
@@ -141,15 +133,13 @@ const Register = (props: any): JSX.Element => {
             <>
               {/* <Text>{JSON.stringify(photo)}</Text> */}
               <Image
-                source={{uri: photo.uri}}
+                source={{uri: photo?.uri}}
                 style={{width: 100, height: 100}}
               />
               {/* <Button title="Upload Photo" onPress={handleUploadPhoto} /> */}
             </>
           )}
-          <Button title="Choose Photo" onPress={handleChoosePhoto}>
-            choose picker
-          </Button>
+          <Button onPress={handleChoosePhoto}>choose picker</Button>
           <FormControl>
             <FormControl.Label>UserName</FormControl.Label>
             <Input

@@ -1,5 +1,7 @@
 interface userinfoType {
-  id: string;
-  userName: string;
-  avatar: string;
+  id?: string;
+  userName?: string;
+  password?: string;
+  avatar?: string;
+  createTime?: string;
 }

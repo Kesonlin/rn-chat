@@ -9,7 +9,6 @@ import {
   Input,
   Link,
   Pressable,
-  StatusBar,
   Text,
   Toast,
   VStack,
@@ -161,7 +160,8 @@ function LoginTab(props: IProps): JSX.Element {
   );
 }
 
-function LoginScreen({navigation}) {
+function LoginScreen(props: any) {
+  const {navigation} = props;
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {
@@ -187,25 +187,29 @@ function LoginScreen({navigation}) {
     register: Register,
   });
 
-  const renderTabBar = props => {
-    const inputRange = props.navigationState.routes.map((x, i) => i);
+  const renderTabBar = (props: any) => {
+    // const inputRange = props.navigationState.routes.map((x, i) => i);
     return (
       <Box flexDirection="row">
-        {props.navigationState.routes.map((route, i) => {
-          const opacity = props.position.interpolate({
-            inputRange,
-            outputRange: inputRange.map(inputIndex =>
-              inputIndex === i ? 1 : 0.5,
-            ),
-          });
+        {props.navigationState.routes.map((route: any, i: number) => {
+          // const opacity = props.position.interpolate({
+          //   inputRange,
+          //   outputRange: inputRange.map(inputIndex =>
+          //     inputIndex === i ? 1 : 0.5,
+          //   ),
+          // });
+
           const color =
             index === i
-              ? useColorModeValue('#000', '#e5e5e5')
-              : useColorModeValue('#1f2937', '#a1a1aa');
+              ? // eslint-disable-next-line
+                useColorModeValue('#000', '#e5e5e5')
+              : // eslint-disable-next-line
+                useColorModeValue('#1f2937', '#a1a1aa');
           const borderColor =
             index === i
               ? 'cyan.500'
-              : useColorModeValue('coolGray.200', 'gray.400');
+              : // eslint-disable-next-line
+                useColorModeValue('coolGray.200', 'gray.400');
           return (
             <Box
               borderBottomWidth="3"
@@ -213,8 +217,7 @@ function LoginScreen({navigation}) {
               flex={1}
               alignItems="center"
               p="3"
-              key={JSON.stringify(route)}
-              cursor="pointer">
+              key={JSON.stringify(route)}>
               <Pressable
                 onPress={() => {
                   console.log(i);
@@ -244,9 +247,9 @@ function LoginScreen({navigation}) {
       renderTabBar={renderTabBar}
       onIndexChange={setIndex}
       initialLayout={initialLayout}
-      style={{
-        marginTop: StatusBar.currentHeight,
-      }}
+      // style={{
+      //   marginTop: StatusBar.currentHeight!,
+      // }}
     />
   );
 }

@@ -12,7 +12,8 @@ import {
 import {useIsFocused} from '@react-navigation/native';
 import store from '../store';
 
-export default function ({navigation}) {
+export default function (props: any) {
+  const {navigation} = props;
   const isFouced = useIsFocused();
   const [info, setInfo] = useState<userinfoType>();
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function ({navigation}) {
         console.log('storage error', e);
         navigation.navigate('login');
       });
-  }, [isFouced]);
+  }, [isFouced, navigation]);
   return (
     <Box alignItems="center">
       <Box
@@ -93,7 +94,7 @@ export default function ({navigation}) {
               fontWeight="500"
               ml="-0.5"
               mt="-1">
-              The Silicon Valley of India.
+              {info?.createTime}
             </Text>
           </Stack>
           <Text fontWeight="400">
