@@ -15,7 +15,7 @@ const MessageStack = createNativeStackNavigator();
 function MessageStackScreen() {
   return (
     <MessageStack.Navigator>
-      <MessageStack.Screen name="main" component={Message} />
+      <MessageStack.Screen name="center" component={Message} />
       <MessageStack.Screen
         name="chat"
         component={Chat}

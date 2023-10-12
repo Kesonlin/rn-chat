@@ -3,5 +3,6 @@ interface userinfoType {
   userName?: string;
   password?: string;
   avatar?: string;
+  recentText?: string;
   createTime?: string;
 }

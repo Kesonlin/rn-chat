@@ -175,7 +175,7 @@ function LoginScreen(props: any) {
   ]);
 
   const navigateMsg = useCallback(() => {
-    navigation.navigate('main');
+    navigation.navigate('center');
   }, [navigation]);
 
   const initialLayout = {

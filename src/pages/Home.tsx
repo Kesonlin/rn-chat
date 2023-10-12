@@ -8,9 +8,114 @@ import {
   Stack,
   Text,
   Image,
+  Button,
+  Modal,
+  TextArea,
 } from 'native-base';
 import {useIsFocused} from '@react-navigation/native';
 import store from '../store';
+import {request} from '../network';
+
+function EditElm(props: any): JSX.Element {
+  const {info, setInfo} = props;
+  const [showModal, setShowModal] = useState(false);
+  const [recentText, setRecentText] = useState();
+  useState(() => {
+    setRecentText(info?.recentText);
+  }, [info]);
+
+  const updateRecentText = async () => {
+    try {
+      const {data} = await request({
+        url: '/user/update',
+        method: 'post',
+        data: {
+          recentText,
+        },
+        headers: {
+          Authorization: info.token,
+        },
+      });
+      console.log(data);
+      await store.remove({
+        key: 'userInfo',
+      });
+      await store.save({
+        key: 'userInfo',
+        data: {
+          ...info,
+          recentText: data.data.recentText,
+        },
+      });
+      setInfo({
+        ...info,
+        recentText,
+      });
+      setShowModal(false);
+      if (data.success) {
+      }
+    } catch (e) {
+      console.log(e);
+
+      setShowModal(false);
+    }
+  };
+
+  return (
+    <Center>
+      <Button onPress={() => setShowModal(true)}>Button</Button>
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <Modal.Content maxWidth="400px">
+          <Modal.CloseButton />
+          <Modal.Header>Edit you sign</Modal.Header>
+          <Modal.Body>
+            <TextArea
+              shadow={2}
+              h="100"
+              placeholder="Text Area Placeholder"
+              w="100%"
+              value={recentText}
+              onChangeText={value => setRecentText(value)}
+              _light={{
+                placeholderTextColor: 'trueGray.700',
+                bg: 'coolGray.100',
+                _hover: {
+                  bg: 'coolGray.200',
+                },
+                _focus: {
+                  bg: 'coolGray.200:alpha.70',
+                },
+              }}
+              _dark={{
+                bg: 'coolGray.800',
+                _hover: {
+                  bg: 'coolGray.900',
+                },
+                _focus: {
+                  bg: 'coolGray.900:alpha.70',
+                },
+              }}
+              autoCompleteType={{}}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button
+                variant="ghost"
+                colorScheme="blueGray"
+                onPress={() => {
+                  setShowModal(false);
+                }}>
+                Cancel
+              </Button>
+              <Button onPress={updateRecentText}>Save</Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+    </Center>
+  );
+}
 
 export default function (props: any) {
   const {navigation} = props;
@@ -18,7 +123,6 @@ export default function (props: any) {
   const [info, setInfo] = useState<userinfoType>();
   useEffect(() => {
     if (!isFouced) return;
-    console.log('加载1');
 
     store
       .load({
@@ -97,20 +201,10 @@ export default function (props: any) {
               {info?.createTime}
             </Text>
           </Stack>
-          <Text fontWeight="400">
-            Bengaluru (also called Bangalore) is the center of India's high-tech
-            industry. The city is also known for its parks and nightlife.
-          </Text>
+          <Text fontWeight="400">{info?.recentText}</Text>
           <HStack alignItems="center" space={4} justifyContent="space-between">
             <HStack alignItems="center">
-              <Text
-                color="coolGray.600"
-                _dark={{
-                  color: 'warmGray.200',
-                }}
-                fontWeight="400">
-                6 mins ago
-              </Text>
+              <EditElm info={info} setInfo={setInfo} />
             </HStack>
           </HStack>
         </Stack>
