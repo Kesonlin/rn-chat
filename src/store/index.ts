@@ -9,7 +9,7 @@ const store = new Storage({
   // If storageBackend is not set, data will be lost after reload.
   storageBackend: AsyncStorage,
   // cache data in the memory. default is true.
-  enableCache: false,
+  enableCache: true,
 });
 
 export default store;
