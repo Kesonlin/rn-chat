@@ -1,6 +1,8 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Avatar,
+  Badge,
+  Box,
   Button,
   Input,
   ScrollView,
@@ -210,7 +212,7 @@ export default function (props: IProps) {
   };
 
   return (
-    <View style={{backgroundColor: 'yellow'}}>
+    <View>
       {/* <SafeAreaView style={{ flex: 1 }}> */}
       <Message
         list={list}
@@ -219,8 +221,7 @@ export default function (props: IProps) {
         scrollRef={scrollRef}
       />
       {/* </SafeAreaView> */}
-
-      <TextArea
+      {/* <TextArea
         shadow={2}
         h={20}
         autoCompleteType={{}}
@@ -250,7 +251,32 @@ export default function (props: IProps) {
       />
       <Button onPress={send} bgColor="violet.300">
         <Text>send</Text>
-      </Button>
+      </Button> */}
+      <Box alignItems="center" marginTop="4">
+        <Input
+          w="100%"
+          py="0"
+          bgColor="#fff"
+          // variant="rounded"
+          InputRightElement={
+            <Button
+              size="xs"
+              rounded="none"
+              w="1/6"
+              h="full"
+              colorScheme="info"
+              onPress={send}>
+              {/* <Badge colorScheme="info" alignSelf="center" variant="outline">
+                INFO
+              </Badge> */}
+              <Text color="#fff">send</Text>
+            </Button>
+          }
+          placeholder="message"
+          value={textAreaValue}
+          onChangeText={text => setTextAreaValue(text)}
+        />
+      </Box>
     </View>
   );
 }

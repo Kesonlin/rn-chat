@@ -8,13 +8,19 @@ import {
   Stack,
   Text,
   Image,
-  Button,
   Modal,
   TextArea,
 } from 'native-base';
 import {useIsFocused} from '@react-navigation/native';
 import store from '../store';
 import {request} from '../network';
+import {
+  Button,
+  ButtonIcon,
+  ButtonText,
+  EditIcon,
+  Icon,
+} from '@gluestack-ui/themed';
 
 function EditElm(props: any): JSX.Element {
   const {info, setInfo} = props;
@@ -63,16 +69,23 @@ function EditElm(props: any): JSX.Element {
 
   return (
     <Center>
-      <Button onPress={() => setShowModal(true)}>Edit</Button>
+      <Button onPress={() => setShowModal(true)}>
+        <ButtonIcon as={EditIcon} mr="$2" />
+        <ButtonText>
+          <Text>Edit</Text>
+        </ButtonText>
+      </Button>
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <Modal.Content maxWidth="400px">
           <Modal.CloseButton />
-          <Modal.Header>Edit you sign</Modal.Header>
+          <Modal.Header>
+            <Text>Edit you sign</Text>
+          </Modal.Header>
           <Modal.Body>
             <TextArea
               shadow={2}
               h="100"
-              placeholder="Text Area Placeholder"
+              placeholder="please chang you sign"
               w="100%"
               value={recentText}
               onChangeText={value => setRecentText(value)}
@@ -106,9 +119,11 @@ function EditElm(props: any): JSX.Element {
                 onPress={() => {
                   setShowModal(false);
                 }}>
-                Cancel
+                <Text>Cancel</Text>
               </Button>
-              <Button onPress={updateRecentText}>Save</Button>
+              <Button onPress={updateRecentText}>
+                <Text>Save</Text>
+              </Button>
             </Button.Group>
           </Modal.Footer>
         </Modal.Content>
@@ -138,7 +153,7 @@ export default function (props: any) {
       });
   }, [isFouced, navigation]);
   return (
-    <Box alignItems="center">
+    <Box alignItems="center" marginTop="24">
       <Box
         maxW="80"
         rounded="lg"
@@ -179,7 +194,7 @@ export default function (props: any) {
             bottom="0"
             px="3"
             py="1.5">
-            PHOTOS
+            AVATAR
           </Center>
         </Box>
         <Stack p="4" space={3}>
