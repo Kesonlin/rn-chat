@@ -22,7 +22,9 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import {NativeBaseProvider, Box, Text, Button} from 'native-base';
+import {NativeBaseProvider} from 'native-base';
+import {GluestackUIProvider, Text} from '@gluestack-ui/themed';
+import {config} from '@gluestack-ui/config';
 
 import {request} from './src/network';
 import Navigate from './src/router';
@@ -46,29 +48,12 @@ function App(): JSX.Element {
   };
 
   return (
-    <NativeBaseProvider>
-      <Navigate />
-    </NativeBaseProvider>
+    <GluestackUIProvider config={config}>
+      <NativeBaseProvider>
+        <Navigate />
+      </NativeBaseProvider>
+    </GluestackUIProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;

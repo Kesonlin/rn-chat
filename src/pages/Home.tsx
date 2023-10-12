@@ -63,7 +63,7 @@ function EditElm(props: any): JSX.Element {
 
   return (
     <Center>
-      <Button onPress={() => setShowModal(true)}>Button</Button>
+      <Button onPress={() => setShowModal(true)}>Edit</Button>
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <Modal.Content maxWidth="400px">
           <Modal.CloseButton />

@@ -8,15 +8,25 @@ import {
   Avatar,
   VStack,
   Spacer,
+  IconButton,
 } from 'native-base';
 import store from '../store';
 import {useIsFocused} from '@react-navigation/native';
 import {request} from '../network';
+import {
+  Input,
+  InputField,
+  InputIcon,
+  InputSlot,
+  SearchIcon,
+} from '@gluestack-ui/themed';
 
 export default function Message(props: any): JSX.Element {
   const {navigation} = props;
   const isFouced = useIsFocused();
-  const [info, setInfo] = useState([]);
+  const [originList, setOriginList] = useState<userinfoType[]>([]);
+  const [list, setList] = useState<userinfoType[]>([]);
+
   useEffect(() => {
     if (!isFouced) return;
 
@@ -24,8 +34,8 @@ export default function Message(props: any): JSX.Element {
       .load({
         key: 'userInfo',
       })
-      .then(_ => {
-        // console.log('storage1', res);
+      .then(res => {
+        console.log('message info', res);
         // setInfo(res);
         // navigation.navigate('login');
       })
@@ -36,20 +46,33 @@ export default function Message(props: any): JSX.Element {
   }, [navigation, isFouced]);
 
   useEffect(() => {
-    // if (!isFouced) return;
+    if (!isFouced) return;
 
     request({
       url: '/user/all',
     }).then(({data}) => {
       // console.log(data);
-      setInfo(data);
+      setOriginList(data);
+      setList(data);
     });
   }, [isFouced]);
 
+  const searchList = (key: string) => {
+    key = key.trim();
+    const filterList = originList.filter(item => item.userName?.includes(key));
+    setList(filterList);
+  };
+
   return (
     <Box>
+      <Input>
+        <InputSlot pl="$3">
+          <InputIcon as={SearchIcon} />
+        </InputSlot>
+        <InputField placeholder="Search..." onChangeText={searchList} />
+      </Input>
       <FlatList
-        data={info}
+        data={list}
         renderItem={({item}: {item: userinfoType}) => (
           <View
             borderBottomWidth="1"
@@ -61,8 +84,6 @@ export default function Message(props: any): JSX.Element {
             pr={['0', '5']}
             py="2"
             onTouchEnd={() => {
-              console.log('chat');
-
               navigation.navigate('chat', {frends: item});
             }}>
             <HStack space={[2, 3]} justifyContent="space-between">
@@ -81,24 +102,24 @@ export default function Message(props: any): JSX.Element {
                   bold>
                   {item.userName}
                 </Text>
-                {/* <Text
+                <Text
                   color="coolGray.600"
                   _dark={{
                     color: 'warmGray.200',
                   }}>
                   {item.recentText}
-                </Text> */}
+                </Text>
               </VStack>
               <Spacer />
-              {/* <Text
+              <Text
                 fontSize="xs"
                 _dark={{
                   color: 'warmGray.50',
                 }}
                 color="coolGray.800"
                 alignSelf="flex-start">
-                {item.timeStamp}
-              </Text> */}
+                {item.createTime}
+              </Text>
             </HStack>
           </View>
         )}
