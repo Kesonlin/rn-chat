@@ -86,7 +86,7 @@ function Message(props: any): JSX.Element {
   // const scrollRef = useRef<any>();
 
   return (
-    <ScrollView h="5/6" bgColor="primary.400" paddingTop="6" ref={scrollRef}>
+    <ScrollView h="91%" bgColor="primary.400" paddingTop="6" ref={scrollRef}>
       {list.map((v: MessageType) =>
         v.sender === user.userName ? (
           <Mine content={v.message} user={user} key={v.id} />

@@ -9,6 +9,7 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Home from '../pages/Home';
 import Chat from '../pages/Chat';
+import Moments from '../pages/Moments';
 
 const MessageStack = createNativeStackNavigator();
 
@@ -47,6 +48,7 @@ export default function Navigate(): JSX.Element {
     <NavigationContainer>
       <Tab.Navigator screenOptions={{headerShown: false}}>
         <Tab.Screen name="message" component={MessageStackScreen} />
+        <Tab.Screen name="moments" component={Moments} />
         <Tab.Screen
           name="home"
           component={Home}
